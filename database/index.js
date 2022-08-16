@@ -7,7 +7,8 @@ let repoSchema = mongoose.Schema({
   repoName: String,
   username: String,
   userId: Number,
-  watchers: Number
+  watchers: Number,
+  html_url: String
 });
 
 let Repo = mongoose.model('Repo', repoSchema);
