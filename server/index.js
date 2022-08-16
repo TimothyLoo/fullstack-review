@@ -1,9 +1,9 @@
 const express = require('express');
 let app = express();
 const bodyParser = require('body-parser');
-const models = require('./models.js');
 const data = require('../data.json');
 const ghHelpers = require('../helpers/github.js');
+const models = require('../database');
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -18,16 +18,7 @@ app.post('/repos', function (req, res) {
 
   //CONTROLLER
   // Disect req.body to get username
-  models.getRepos()
-  .then(results=>{
-    for (let repo of results) {
-      if (repo.username === req.body.username) { throw new Error ('User already exists'); }
-    }
-    return req.body.username;
-  })
-  .then((username)=>{
-  // Send API request to GitHub on username, get repos
-  return ghHelpers.getReposByUsername(username)
+  ghHelpers.getReposByUsername(req.body.username)
     .then((results)=>{
       let mapData = results.slice()
       mapData.map(repo=>{
@@ -36,23 +27,16 @@ app.post('/repos', function (req, res) {
         repo.username = repo.owner.login;
         repo.userId = repo.owner.id;
       });
-      return mapData;
+      return models.save(mapData)
     })
-    .catch((err)=>{res.send(err)});
-  })
-  .then((mapData)=>{
+  .then((qResults)=>{res.send(qResults);})
     // Call Model to add repos, to db
-    models.addRepos(mapData)
-    .then((results)=>{res.send(results);})
-    .catch(err=>{res.send(err);});
-  })
   .catch((err)=>{res.send(err);});
 });
 
+// This route should send back the top 25 repos
 app.get('/repos', function (req, res) {
-  // TODO - your code here!
-  // This route should send back the top 25 repos
-  models.get25Repos()
+  models.find()
     .then(results=>{res.json(results)})
     .catch(err=>{res.send(err)});
 });

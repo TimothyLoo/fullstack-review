@@ -13,18 +13,23 @@ let repoSchema = mongoose.Schema({
 
 let Repo = mongoose.model('Repo', repoSchema);
 
-// let save = (repos) => {
-//   // TODO: Your code here
-//   // This function should save a repo or repos to
-//   // the MongoDB
-//   })
-// }
+module.exports = {
+  save: (repos) => {
 
-// let find = () => {
-//   return Repo.find();
-// }
+    repos = repos.map(repo=>{
+      return Repo.replaceOne({repoId: repo.repoId}, repo, {upsert: true})
+    })
+    return Promise.all(repos)
+    .then(qResults=>{return qResults;})
+    .catch((err)=>{return err;});
+    // TODO: Your code here
+    // This function should save a repo or repos to
+    // the MongoDB
+  },
 
-module.exports = Repo;
-
-// module.exports.save = save;
-// module.exports.find = find;
+  find : () => {
+    return Repo.find().sort({watchers: 'desc'}).limit(25)
+    .then((results)=>{return results;})
+    .catch((err)=>{return err;})
+  }
+}
