@@ -5,9 +5,9 @@ const Repo = (props) => {
 
   return (
     <div className="repo">
-      <b>Repo Name:</b> <a href={html_url} target="_blank">{repoName}</a>
-      <b>Github Handle:</b> {username}
-      <b>Watchers:</b> {watchers}
+      <span><b>Repo Name:</b> <a href={html_url} target="_blank">{repoName}</a></span>
+      <span><b>Github Handle:</b><em> {username}</em></span>
+      <span><b>Watchers:</b><em> {watchers}</em></span>
     </div>
   )
 }
